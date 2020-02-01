@@ -46,6 +46,15 @@ py::tuple solve_dense_wrap(py::array_t<T, ExtraFlags> input1) {
     const T LARGE_COST = 2 * r * max_abs_cost + 1;
     std::vector<std::vector<T>> costs(n, std::vector<T>(n, LARGE_COST));
 
+    // Use LARGE_COST for missing edges with i < nrows and j < ncols
+    // Use zero for additional edges in non-square problems.
+    for (int i = nrows; i < n; i++)
+        for (int j = 0; j < n; j++)
+            costs[i][j] = 0;
+    for (int i = 0; i < n; i++)
+        for (int j = ncols; j < n; j++)
+            costs[i][j] = 0;
+
     for (int i = 0; i < nrows; i++)
     {
         T *cptr = data + i*ncols;
